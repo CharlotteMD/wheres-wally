@@ -19,9 +19,7 @@ import com.google.android.gms.location.LocationResult.create
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 
-class MyLocation(val lat: Double, val long: Double) {
-
-}
+class MyLocation(val lat: Double, val long: Double, val speed: Float)
 
 interface ILocationViewModel {
     var locationFromGps: MyLocation?
@@ -39,7 +37,7 @@ class LocationViewModel(private val fusedLocationProviderClient: FusedLocationPr
                     "onLocationResult",
                     "locationResult.latitude: ${locationResult.lastLocation?.latitude}"
                 )
-                locationFromGps = locationResult.lastLocation?.let { l -> MyLocation(l.latitude, l.longitude) }
+                locationFromGps = locationResult.lastLocation?.let { l -> MyLocation(l.latitude, l.longitude, l.speed) }
             }
         }
 
@@ -50,10 +48,6 @@ class LocationViewModel(private val fusedLocationProviderClient: FusedLocationPr
             .build()
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-
-
     }
-
-
 
 }

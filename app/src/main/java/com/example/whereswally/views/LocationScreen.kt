@@ -1,25 +1,19 @@
 package com.example.whereswally.views
 
-import android.location.Location
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.whereswally.EditLocation
-import com.example.whereswally.TextLocationInfo
-import com.example.whereswally.WheresWallyLocationLogic
-import com.example.whereswally.ui.theme.WheresWallyTheme
 import com.example.whereswally.viewmodels.ILocationViewModel
-import com.example.whereswally.viewmodels.LocationViewModel
 import com.example.whereswally.viewmodels.MyLocation
-
 
 @Composable
 fun LocationScreen(
@@ -27,6 +21,7 @@ fun LocationScreen(
 ) {
     var latInput = viewModel.locationFromGps?.lat ?: 0.0
     var longInput = viewModel.locationFromGps?.long ?: 0.0
+    var speedInput = viewModel.locationFromGps?.speed ?: 0.0F
 
     val updateSwitchState = remember { mutableStateOf(true) }
     val gpsSwitchState = remember { mutableStateOf(true) }
@@ -42,11 +37,10 @@ fun LocationScreen(
         )
         Spacer(Modifier.height(16.dp))
 
-        TextLocationInfo(
-            latValue = latInput,
-            lonValue = longInput,
-            speed = 15.9,
-        )
+        Text(text = "Lat:  " + latInput)
+        Text(text = "Lon:  " + longInput)
+        Text("Speed: " + speedInput)
+        Spacer(Modifier.height(16.dp))
 
         Row() {
             Text(text = "Location Updates: ")
@@ -55,7 +49,6 @@ fun LocationScreen(
                 onCheckedChange = { updateSwitchState.value = it }
             )
         }
-
         Spacer(Modifier.height(16.dp))
 
         Row() {
@@ -65,13 +58,12 @@ fun LocationScreen(
                 onCheckedChange = { gpsSwitchState.value = it }
             )
         }
+        Spacer(Modifier.height(16.dp))
 
         Button(onClick = { viewModel.startTracking() }) {
             Text("Button")
         }
-
     }
-
 }
 
 @Preview(showBackground = true)
@@ -82,9 +74,6 @@ fun DefaultPreview() {
             TODO("Not yet implemented")
         }
 
-        override var locationFromGps: MyLocation? = MyLocation(12.5, 16.03)
-
+        override var locationFromGps: MyLocation? = MyLocation(12.5, 16.03, 12.1F)
     })
 }
-
-//LocationViewModel(LocationServices.getFusedLocationProviderClient(LocalContext.current))
