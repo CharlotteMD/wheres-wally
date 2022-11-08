@@ -17,23 +17,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WheresWallyTheme {
-                WheresWallyLocationLogic()
+                WheresWallyMainScreen()
             }
         }
     }
 }
 
 @Composable
-fun WheresWallyLocationLogic(
-
-) {
-    LocationScreen(LocationViewModel(LocationServices.getFusedLocationProviderClient(LocalContext.current)))
+fun WheresWallyMainScreen() {
+    val currentContext = LocalContext.current
+    LocationScreen(
+        LocationViewModel(LocationServices.getFusedLocationProviderClient(currentContext)),
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     WheresWallyTheme {
-        WheresWallyLocationLogic()
+        WheresWallyMainScreen()
     }
 }
