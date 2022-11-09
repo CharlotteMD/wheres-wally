@@ -22,7 +22,8 @@ fun LocationScreen(
 ) {
 
     val fineLocationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    val permissionStatus = fineLocationPermission.status
+
+    var trackingOnOffState by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier.padding(32.dp),
@@ -37,15 +38,33 @@ fun LocationScreen(
 
         when (fineLocationPermission.status) {
             PermissionStatus.Granted -> {
-                Button(
-                    onClick = {
-                        locationViewModel.startTracking()
-                    },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ){
-                    Text(text = "Start Tracking")
+                Row() {
+                    Button(
+                        onClick = {
+                            locationViewModel.startTracking()
+                        },
+                    ){
+                        Text(text = "Start Tracking")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            locationViewModel.stopTracking()
+                        },
+                    ){
+                        Text(text = "Stop Tracking")
+                    }
                 }
                 DisplayLocationData(locationViewModel)
+
+                Row() {
+                    Text(text = "High accuracy: ")
+                    Switch(
+                        checked = trackingOnOffState,
+                        onCheckedChange = { trackingOnOffState = it }
+                    )
+                    Text(text = "Power Saving mode ")
+                }
             }
             else -> {
                 Text(text = "You must give permission to use this app.")
@@ -71,8 +90,6 @@ fun DisplayLocationData(
     var longInput = locationViewModel.locationFromGps?.long ?: 0.0
     var speedInput = locationViewModel.locationFromGps?.speed ?: 0.0F
 
-    var trackingOnOffState by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier.padding(32.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -80,15 +97,6 @@ fun DisplayLocationData(
         Text(text = "Lat:  " + latInput)
         Text(text = "Lon:  " + longInput)
         Text("Speed: " + speedInput)
-        Spacer(Modifier.height(16.dp))
-
-        Row() {
-            Text(text = "Location Updates: ")
-            Switch(
-                checked = trackingOnOffState,
-                onCheckedChange = { trackingOnOffState = it }
-            )
-        }
     }
 }
 
@@ -101,6 +109,9 @@ fun DefaultPreview() {
                 TODO("Not yet implemented")
             }
             override var locationFromGps: MyLocation? = MyLocation(12.5, 16.03, 12.1F)
+            override fun stopTracking() {
+                TODO("Not yet implemented")
+            }
         }
     )
 }

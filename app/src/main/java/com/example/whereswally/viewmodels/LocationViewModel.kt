@@ -26,6 +26,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationResult.create
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import java.util.jar.Manifest
 
@@ -34,10 +35,11 @@ class MyLocation(val lat: Double, val long: Double, val speed: Float)
 interface ILocationViewModel {
     var locationFromGps: MyLocation?
     fun startTracking()
+    fun stopTracking()
 }
 
 class LocationViewModel(
-    private val fusedLocationProviderClient: FusedLocationProviderClient,
+        private val fusedLocationProviderClient: FusedLocationProviderClient,
     ): ViewModel(), ILocationViewModel {
 
     override var locationFromGps: MyLocation? by mutableStateOf(null)
@@ -45,23 +47,30 @@ class LocationViewModel(
     private val locationCallback =
         object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
-                Log.d(
-                    "onLocationResult",
-                    "locationResult.latitude: ${locationResult.lastLocation?.latitude}"
-                )
                 locationFromGps = locationResult.lastLocation?.let { l -> MyLocation(l.latitude, l.longitude, l.speed) }
             }
         }
+
+
 
 
     @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
     override fun startTracking() {
 
         val locationRequest = LocationRequest
-            .Builder( 10000 )
+            .Builder(1000)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY )
             .build()
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
 
+    }
+
+    override fun stopTracking() {
+        stopLocationUpdates()
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 }
