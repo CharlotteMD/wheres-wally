@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.whereswally.viewmodels.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 
@@ -21,9 +22,10 @@ fun LocationScreen(
     locationViewModel: ILocationViewModel
 ) {
 
-    val fineLocationPermission = rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-
-    var trackingOnOffState by remember { mutableStateOf(true) }
+    val fineLocationPermission =
+        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    val backgroundLocationPermission =
+        rememberPermissionState(android.Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 
     Column(
         modifier = Modifier.padding(32.dp),
@@ -38,47 +40,75 @@ fun LocationScreen(
 
         when (fineLocationPermission.status) {
             PermissionStatus.Granted -> {
-                Row() {
-                    Button(
-                        onClick = {
-                            locationViewModel.startTracking()
-                        },
-                    ){
-                        Text(text = "Start Tracking")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            locationViewModel.stopTracking()
-                        },
-                    ){
-                        Text(text = "Stop Tracking")
-                    }
-                }
-                DisplayLocationData(locationViewModel)
+                when (fineLocationPermission.status) {
+                    PermissionStatus.Granted -> {
+                        when (backgroundLocationPermission.status) {
+                            PermissionStatus.Granted -> {
+                                DisplayIfPermissionGranted(locationViewModel = locationViewModel)
+                            }
+                            else -> {
+                                DisplayIfPermissionDenied(backgroundLocationPermission)
+                            }
+                        }
 
-                Row() {
-                    Text(text = "High accuracy: ")
-                    Switch(
-                        checked = trackingOnOffState,
-                        onCheckedChange = { trackingOnOffState = it }
-                    )
-                    Text(text = "Power Saving mode ")
+                    }
+                    else -> {
+                        DisplayIfPermissionDenied(fineLocationPermission)
+                    }
                 }
+
             }
-            else -> {
-                Text(text = "You must give permission to use this app.")
-                Button(
-                    onClick = {fineLocationPermission.launchPermissionRequest()}
-                ){
-                    Text(text = "Give permission")
-                }
-            }
+
         }
-
     }
+}
 
+@Composable
+fun DisplayIfPermissionGranted(
+    locationViewModel: ILocationViewModel
+) {
+    var trackingOnOffState by remember { mutableStateOf(true) }
 
+    Row() {
+        Button(
+            onClick = {
+                locationViewModel.startTracking()
+            },
+        ){
+            Text(text = "Start Tracking")
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Button(
+            onClick = {
+                locationViewModel.stopTracking()
+            },
+        ){
+            Text(text = "Stop Tracking")
+        }
+    }
+    DisplayLocationData(locationViewModel)
+
+    Row() {
+        Text(text = "Power Saving mode ")
+        Switch(
+            checked = trackingOnOffState,
+            onCheckedChange = { trackingOnOffState = it }
+        )
+        Text(text = "High accuracy: ")
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun DisplayIfPermissionDenied(
+    permission: PermissionState
+) {
+    Text(text = "You must give permission to use this app.")
+    Button(
+        onClick = {permission.launchPermissionRequest()}
+    ){
+        Text(text = "Give permission")
+    }
 }
 
 @Composable
@@ -89,17 +119,41 @@ fun DisplayLocationData(
     var latInput = locationViewModel.locationFromGps?.lat ?: 0.0
     var longInput = locationViewModel.locationFromGps?.long ?: 0.0
     var speedInput = locationViewModel.locationFromGps?.speed ?: 0.0F
+    var accuracyInput = locationViewModel.locationFromGps?.accuracy ?: 0.0F
+    var altitudeInput = locationViewModel.locationFromGps?.altitude ?: 0.0
+    var bearingInput = locationViewModel.locationFromGps?.bearing ?: 0.0F
+    var timeInput = locationViewModel.locationFromGps?.time ?: 0.0
+
+    var latList = listOf<Double>()
+
+    fun addToLatList(latInput: Double): List<Double> {
+        latList = latList + latInput
+        return latList
+    }
+
+    var latMutableInput by remember { mutableStateOf(0.0) }
+    addToLatList(latMutableInput)
 
     Column(
         modifier = Modifier.padding(32.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(text = "Lat:  " + latInput)
-        Text(text = "Lon:  " + longInput)
+        Text(text = "Latitude:  " + latInput)
+        Text(text = "Longitude:  " + longInput)
+        Text(text = "Altitude:  " + altitudeInput)
+        Text(text = "Bearing:  " + bearingInput)
+        Text("Accuracy: " + accuracyInput)
         Text("Speed: " + speedInput)
+        Text(text = "Time:  " + timeInput)
+
+        Spacer(modifier = Modifier.height(8.dp))
+        latList.forEach { lat ->
+            Text(text = "lat: " + lat)
+        }
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -108,7 +162,16 @@ fun DefaultPreview() {
             override fun startTracking() {
                 TODO("Not yet implemented")
             }
-            override var locationFromGps: MyLocation? = MyLocation(12.5, 16.03, 12.1F)
+            override var locationFromGps: MyLocation? = MyLocation(
+                12.5,
+                16.03,
+                12.1F,
+                45.6F,
+                1500.8,
+                2.5F,
+                1000001234567,
+
+            )
             override fun stopTracking() {
                 TODO("Not yet implemented")
             }
