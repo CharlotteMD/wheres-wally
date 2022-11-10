@@ -4,16 +4,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
-import com.example.whereswally.data.Word
+import com.example.whereswally.data.MyLocation
 import com.example.whereswally.viewmodels.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -202,11 +200,11 @@ fun DefaultPreview() {
             override fun stopTracking() {
                 TODO("Not yet implemented")
             }
-            override val allWords: LiveData<List<Word>>
+            override val allWords: LiveData<List<MyLocation>>
                 get() {
                     TODO()
                 }
-            override fun addWord(word: Word) {
+            override fun addWord(word: MyLocation) {
                 TODO("Not yet implemented")
             }
         }

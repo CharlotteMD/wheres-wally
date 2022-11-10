@@ -12,20 +12,20 @@ import org.junit.runner.RunWith
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
-class WordDatabaseTest {
+class MyLocationDatabaseTest {
 
-    private lateinit var wordDao: WordDao
-    private lateinit var db: WordRoomDatabase
+    private lateinit var myLocationDao: MyLocationDao
+    private lateinit var db: MyLocationDatabase
 
     @Before
     fun createDb() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
 
-        db = Room.inMemoryDatabaseBuilder(context, WordRoomDatabase::class.java)
+        db = Room.inMemoryDatabaseBuilder(context, MyLocationDatabase::class.java)
             .allowMainThreadQueries()
             .build()
 
-        wordDao = db.wordDao()
+        myLocationDao = db.myLocationDao()
     }
 
     @After
@@ -37,11 +37,11 @@ class WordDatabaseTest {
     @Test
     @Throws(Exception::class)
     fun insertAndGetTodo() = runBlocking {
-        val wordTestValue = "Test"
-        val wordItem = Word(wordTestValue)
-        wordDao.addWord(wordItem)
-        val oneItem = wordDao.getAllWords()
+        val locationTestValue = "Test"
+        val wordItem = MyLocation(locationTestValue)
+        myLocationDao.addLocation(wordItem)
+        val oneItem = myLocationDao.getAllLocations()
         val firstItem = oneItem.elementAt(0)
-        assertEquals(firstItem, wordTestValue)
+        assertEquals(firstItem, locationTestValue)
     }
 }

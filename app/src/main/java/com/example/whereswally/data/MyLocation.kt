@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = "word_table")
-data class Word(
+@Entity(tableName = "my_location_table")
+data class MyLocation(
     @PrimaryKey
-    @ColumnInfo(name = "word") val word: String
+    @ColumnInfo(name = "myLocation") val myLocation: String
 )

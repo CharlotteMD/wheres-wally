@@ -9,20 +9,20 @@ import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface WordDao {
+interface MyLocationDao {
 
-    @Query("SELECT * FROM word_table")
-    fun getAllWords(): Flow<List<Word>>
+    @Query("SELECT * FROM my_location_table")
+    fun getAllLocations(): Flow<List<MyLocation>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addWord(word: Word)
+    suspend fun addLocation(myLocation: MyLocation)
 
     @Update
-    suspend fun updateWord(word: Word)
+    suspend fun updateLocation(myLocation: MyLocation)
 
     @Delete
-    suspend fun deleteWord(word: Word)
+    suspend fun deleteLocation(myLocation: MyLocation)
 
-    @Query("DELETE FROM word_table")
+    @Query("DELETE FROM my_location_table")
     suspend fun deleteAll()
 }

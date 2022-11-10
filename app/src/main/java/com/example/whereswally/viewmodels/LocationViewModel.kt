@@ -8,12 +8,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.*
-import com.example.whereswally.data.Word
-import com.example.whereswally.data.WordRepository
-import com.example.whereswally.data.WordViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionState
-import com.google.accompanist.permissions.PermissionStatus
+import com.example.whereswally.data.MyLocation
+import com.example.whereswally.data.MyLocationRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -21,7 +17,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import kotlinx.coroutines.launch
 
-class MyLocation(
+class MyLocationData(
     val lat: Double,
     val long: Double,
     val speed: Float,
@@ -32,25 +28,25 @@ class MyLocation(
 )
 
 interface ILocationViewModel {
-    var locationFromGps: MyLocation?
+    var locationFromGps: MyLocationData?
     fun startTracking()
     fun stopTracking()
-    val allWords: LiveData<List<Word>>
-    fun addWord(word: Word)
+    val allWords: LiveData<List<MyLocation>>
+    fun addWord(word: MyLocation)
 }
 
 class LocationViewModel(
         private val fusedLocationProviderClient: FusedLocationProviderClient,
-        private val repository: WordRepository
+        private val repository: MyLocationRepository
     ): ViewModel(), ILocationViewModel {
 
-    override var locationFromGps: MyLocation? by mutableStateOf(null)
+    override var locationFromGps: MyLocationData? by mutableStateOf(null)
 
     private val locationCallback =
         object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationFromGps = locationResult.lastLocation?.let { l ->
-                    MyLocation(
+                    MyLocationData(
                         l.latitude,
                         l.longitude,
                         l.speed,
@@ -97,11 +93,11 @@ class LocationViewModel(
 
     // ROOM
 
-    override val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
+    override val allWords: LiveData<List<MyLocation>> = repository.allWords.asLiveData()
 
-    override fun addWord(word: Word) =
+    override fun addLocation(myLocation: MyLocation) =
         viewModelScope.launch {
-            repository.addWord(word) }
+            repository.addLocation(myLocation) }
 
     }
 
@@ -109,7 +105,7 @@ class LocationViewModel(
 
 class WordViewModelFactory(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
-    private val repository: WordRepository,
+    private val repository: MyLocationRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
