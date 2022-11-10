@@ -1,4 +1,4 @@
-package com.example.whereswally.room
+package com.example.whereswally.data
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

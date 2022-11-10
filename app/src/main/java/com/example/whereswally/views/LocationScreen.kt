@@ -4,12 +4,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import com.example.whereswally.data.Word
 import com.example.whereswally.viewmodels.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -96,7 +100,22 @@ fun DisplayIfPermissionGranted(
         )
         Text(text = "High accuracy: ")
     }
+
+    WordTestScreen(locationViewModel = locationViewModel)
 }
+
+@Composable
+fun WordTestScreen(
+    locationViewModel: ILocationViewModel
+) {
+
+//    val words = locationViewModel.allWords
+//
+//    words.forEach { word ->
+//        Text(word)
+//    }
+}
+
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -105,10 +124,18 @@ fun DisplayIfPermissionDenied(
 ) {
     Text(text = "You must give permission to use this app.")
     Button(
+
+    //        TODO - FIX
+    //        Not confident this actually works
+    //        Intended behaviour - launches Android permissions dialog
+    //        Perhaps put info of how to update in your phone settings
+
         onClick = {permission.launchPermissionRequest()}
     ){
         Text(text = "Give permission")
     }
+
+//    WordTestScreen()
 }
 
 @Composable
@@ -173,6 +200,13 @@ fun DefaultPreview() {
 
             )
             override fun stopTracking() {
+                TODO("Not yet implemented")
+            }
+            override val allWords: LiveData<List<Word>>
+                get() {
+                    TODO()
+                }
+            override fun addWord(word: Word) {
                 TODO("Not yet implemented")
             }
         }

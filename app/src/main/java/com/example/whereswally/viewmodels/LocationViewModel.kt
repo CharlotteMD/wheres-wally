@@ -7,7 +7,10 @@ import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
+import com.example.whereswally.data.Word
+import com.example.whereswally.data.WordRepository
+import com.example.whereswally.data.WordViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
@@ -16,6 +19,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.launch
 
 class MyLocation(
     val lat: Double,
@@ -31,10 +35,13 @@ interface ILocationViewModel {
     var locationFromGps: MyLocation?
     fun startTracking()
     fun stopTracking()
+    val allWords: LiveData<List<Word>>
+    fun addWord(word: Word)
 }
 
 class LocationViewModel(
         private val fusedLocationProviderClient: FusedLocationProviderClient,
+        private val repository: WordRepository
     ): ViewModel(), ILocationViewModel {
 
     override var locationFromGps: MyLocation? by mutableStateOf(null)
@@ -56,27 +63,59 @@ class LocationViewModel(
             }
         }
 
-        @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
-        override fun startTracking() {
+    @RequiresPermission(anyOf = [ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION])
+    override fun startTracking() {
 
-            val locationRequest = LocationRequest
-                .Builder(1000)
-                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
-                .build()
+        val locationRequest = LocationRequest
+            .Builder(1000)
+            .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+            .build()
 
-            fusedLocationProviderClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-            )
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
 
-        }
+    // get values of locationFromGps
+    // add them to Room via ViewModel
+    // only make data visible to activity - data is updated via Room
 
-        override fun stopTracking() {
-            stopLocationUpdates()
-        }
+    // TO FIX
+    // find a way to access locationFromGps values - they are mutable maybe change them into a Flow?
+    // add extra columns to
 
-        private fun stopLocationUpdates() {
-            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
-        }
     }
+
+    override fun stopTracking() {
+        stopLocationUpdates()
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+    }
+
+    // ROOM
+
+    override val allWords: LiveData<List<Word>> = repository.allWords.asLiveData()
+
+    override fun addWord(word: Word) =
+        viewModelScope.launch {
+            repository.addWord(word) }
+
+    }
+
+
+
+class WordViewModelFactory(
+    private val fusedLocationProviderClient: FusedLocationProviderClient,
+    private val repository: WordRepository,
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(LocationViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return LocationViewModel(fusedLocationProviderClient, repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
