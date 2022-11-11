@@ -33,7 +33,6 @@ interface ILocationViewModel {
     fun startTracking()
     fun stopTracking()
     val allLocations: LiveData<List<MyLocation>>
-    fun addLocation(myLocation: MyLocation): Job
 }
 
 class LocationViewModel(
@@ -96,12 +95,12 @@ class LocationViewModel(
 
     override val allLocations: LiveData<List<MyLocation>> = repository.allLocations.asLiveData()
 
-    override fun addLocation(myLocation: MyLocation): Job =
-        viewModelScope.launch {
-            repository.addLocation(myLocation) }
+//    override fun addLocation(myLocation: MyLocation): Job =
+//        viewModelScope.launch {
+//            repository.addLocation(myLocation) }
+//
 
     }
-
 
 
 class LocationViewModelFactory(

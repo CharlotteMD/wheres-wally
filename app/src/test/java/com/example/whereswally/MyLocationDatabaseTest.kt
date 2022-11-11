@@ -1,8 +1,11 @@
-package com.example.whereswally.data
+package com.example.whereswally
 
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.example.whereswally.data.MyLocation
+import com.example.whereswally.data.MyLocationDao
+import com.example.whereswally.data.MyLocationDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -41,9 +44,10 @@ class MyLocationDatabaseTest {
         val locationTestValue = "Test"
         val locationItem = MyLocation(locationTestValue)
         myLocationDao.addLocation(locationItem)
-        val oneItem = myLocationDao.getAllLocations()
+        val myLocationFlow = myLocationDao.getAllLocations()
 
-        val firstItem = oneItem.first()
+        val firstItem = myLocationFlow.first()
+
         assertEquals(firstItem, locationTestValue)
     }
 }

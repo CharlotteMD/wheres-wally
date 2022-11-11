@@ -16,7 +16,7 @@ interface MyLocationDao {
     fun getAllLocations(): Flow<List<MyLocation>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun addLocation(myLocation: MyLocation): Job
+    fun addLocation(myLocation: MyLocation)
 
     @Update
     fun updateLocation(myLocation: MyLocation)

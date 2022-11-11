@@ -6,7 +6,7 @@ import org.junit.Assert.*
 
 class WheresWallyTests {
     @Test
-    fun getsGpsData() {
+    fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
 }

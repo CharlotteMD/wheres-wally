@@ -203,9 +203,6 @@ fun DefaultPreview() {
                 get() {
                     TODO()
                 }
-            override fun addLocation(myLocation: MyLocation) {
-                TODO("Not yet implemented")
-            }
         }
     )
 }
