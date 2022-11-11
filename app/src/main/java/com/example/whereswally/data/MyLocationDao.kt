@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -15,14 +16,12 @@ interface MyLocationDao {
     fun getAllLocations(): Flow<List<MyLocation>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addLocation(myLocation: MyLocation)
+    fun addLocation(myLocation: MyLocation): Job
 
     @Update
-    suspend fun updateLocation(myLocation: MyLocation)
+    fun updateLocation(myLocation: MyLocation)
 
     @Delete
-    suspend fun deleteLocation(myLocation: MyLocation)
+    fun deleteLocation(myLocation: MyLocation)
 
-    @Query("DELETE FROM my_location_table")
-    suspend fun deleteAll()
 }

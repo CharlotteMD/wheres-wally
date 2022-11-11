@@ -3,6 +3,7 @@ package com.example.whereswally.data
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -36,12 +37,13 @@ class MyLocationDatabaseTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertAndGetTodo() = runBlocking {
+    suspend fun insertAndGetTodo() = runBlocking {
         val locationTestValue = "Test"
-        val wordItem = MyLocation(locationTestValue)
-        myLocationDao.addLocation(wordItem)
+        val locationItem = MyLocation(locationTestValue)
+        myLocationDao.addLocation(locationItem)
         val oneItem = myLocationDao.getAllLocations()
-        val firstItem = oneItem.elementAt(0)
+
+        val firstItem = oneItem.first()
         assertEquals(firstItem, locationTestValue)
     }
 }

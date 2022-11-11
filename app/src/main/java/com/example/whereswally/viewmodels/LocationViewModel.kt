@@ -15,6 +15,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class MyLocationData(
@@ -31,8 +32,8 @@ interface ILocationViewModel {
     var locationFromGps: MyLocationData?
     fun startTracking()
     fun stopTracking()
-    val allWords: LiveData<List<MyLocation>>
-    fun addWord(word: MyLocation)
+    val allLocations: LiveData<List<MyLocation>>
+    fun addLocation(myLocation: MyLocation): Job
 }
 
 class LocationViewModel(
@@ -93,9 +94,9 @@ class LocationViewModel(
 
     // ROOM
 
-    override val allWords: LiveData<List<MyLocation>> = repository.allWords.asLiveData()
+    override val allLocations: LiveData<List<MyLocation>> = repository.allLocations.asLiveData()
 
-    override fun addLocation(myLocation: MyLocation) =
+    override fun addLocation(myLocation: MyLocation): Job =
         viewModelScope.launch {
             repository.addLocation(myLocation) }
 
@@ -103,7 +104,7 @@ class LocationViewModel(
 
 
 
-class WordViewModelFactory(
+class LocationViewModelFactory(
     private val fusedLocationProviderClient: FusedLocationProviderClient,
     private val repository: MyLocationRepository,
 ) : ViewModelProvider.Factory {

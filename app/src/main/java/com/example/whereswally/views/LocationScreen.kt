@@ -187,24 +187,23 @@ fun DefaultPreview() {
             override fun startTracking() {
                 TODO("Not yet implemented")
             }
-            override var locationFromGps: MyLocation? = MyLocation(
+            override var locationFromGps: MyLocationData? = MyLocationData(
                 12.5,
                 16.03,
                 12.1F,
                 45.6F,
                 1500.8,
                 2.5F,
-                1000001234567,
-
+                1000001234567
             )
             override fun stopTracking() {
                 TODO("Not yet implemented")
             }
-            override val allWords: LiveData<List<MyLocation>>
+            override val allLocations: LiveData<List<MyLocation>>
                 get() {
                     TODO()
                 }
-            override fun addWord(word: MyLocation) {
+            override fun addLocation(myLocation: MyLocation) {
                 TODO("Not yet implemented")
             }
         }
