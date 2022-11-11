@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
-import com.example.whereswally.data.MyLocation
 import com.example.whereswally.viewmodels.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
@@ -199,7 +198,7 @@ fun DefaultPreview() {
             override fun stopTracking() {
                 TODO("Not yet implemented")
             }
-            override val allLocations: LiveData<List<MyLocation>>
+            override val allLocations: LiveData<List<MyLocationData>>
                 get() {
                     TODO()
                 }

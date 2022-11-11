@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.whereswally.viewmodels.MyLocationData
 
 
-
-@Database(entities = arrayOf(MyLocation::class), version = 1, exportSchema = false)
-public abstract class MyLocationDatabase : RoomDatabase() {
+@Database(entities = arrayOf(MyLocationData::class), version = 1, exportSchema = false)
+abstract class MyLocationDatabase : RoomDatabase() {
 
     abstract fun myLocationDao(): MyLocationDao
 

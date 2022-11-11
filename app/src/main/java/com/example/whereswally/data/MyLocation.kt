@@ -9,7 +9,7 @@ data class MyLocation(
     @PrimaryKey
 
     @ColumnInfo(name = "myLocation")
-    val myLocation: String,
+    val myLocation: String = "Home",
 
     @ColumnInfo(name = "lat")
     var lat: Double? = 0.0,

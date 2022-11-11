@@ -8,31 +8,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.*
-import com.example.whereswally.data.MyLocation
 import com.example.whereswally.data.MyLocationRepository
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.Priority
-import kotlinx.coroutines.Job
+import com.google.android.gms.location.*
 import kotlinx.coroutines.launch
 
 class MyLocationData(
-    val lat: Double,
-    val long: Double,
-    val speed: Float,
-    val accuracy: Float,
-    val altitude: Double,
-    val bearing: Float,
-    val time: Long
+    val lat: Double = 0.0,
+    val long: Double = 0.0,
+    val speed: Float = 0.0F,
+    val accuracy: Float = 0.0F,
+    val altitude: Double = 0.0,
+    val bearing: Float = 0.0F,
+    val time: Long = 0
 )
 
 interface ILocationViewModel {
     var locationFromGps: MyLocationData?
     fun startTracking()
     fun stopTracking()
-    val allLocations: LiveData<List<MyLocation>>
+    val allLocations: LiveData<List<MyLocationData>>
 }
 
 class LocationViewModel(
@@ -41,6 +35,11 @@ class LocationViewModel(
     ): ViewModel(), ILocationViewModel {
 
     override var locationFromGps: MyLocationData? by mutableStateOf(null)
+
+    fun addLocation(myLocation: MyLocationData) =
+        viewModelScope.launch {
+            repository.addLocation(myLocation)
+        }
 
     private val locationCallback =
         object : LocationCallback() {
@@ -56,6 +55,7 @@ class LocationViewModel(
                         l.time
                     )
                 }
+                locationFromGps?.let { addLocation(myLocation = it) }
             }
         }
 
@@ -93,12 +93,9 @@ class LocationViewModel(
 
     // ROOM
 
-    override val allLocations: LiveData<List<MyLocation>> = repository.allLocations.asLiveData()
+    override val allLocations: LiveData<List<MyLocationData>> = repository.allLocations.asLiveData()
 
-//    override fun addLocation(myLocation: MyLocation): Job =
-//        viewModelScope.launch {
-//            repository.addLocation(myLocation) }
-//
+
 
     }
 
